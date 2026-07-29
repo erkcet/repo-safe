@@ -191,7 +191,7 @@ def test_verify_rejects_untracked_special_files(tmp_path: Path) -> None:
     assert "unsafe special file: pipe" in report.errors
 
 
-@pytest.mark.parametrize("relative", ["C:/outside.txt", "a//b.txt", "a/./b.txt"])
+@pytest.mark.parametrize("relative", ["C:/outside.txt", "a//b.txt", "a/./b.txt", "bad\nname.txt"])
 def test_verify_rejects_noncanonical_or_drive_manifest_paths(tmp_path: Path, relative: str) -> None:
     snapshot = tmp_path / "safe"
     snapshot.mkdir()
@@ -205,7 +205,8 @@ def test_verify_rejects_noncanonical_or_drive_manifest_paths(tmp_path: Path, rel
     report = verify_tree(snapshot)
 
     assert report.ok is False
-    assert f"unsafe manifest path: {relative}" in report.errors
+    displayed = json.dumps(relative) if "\n" in relative else relative
+    assert f"unsafe manifest path: {displayed}" in report.errors
 
 
 def test_verify_rejects_invalid_utf8_tracked_file(tmp_path: Path) -> None:

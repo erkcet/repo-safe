@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import plistlib
 from pathlib import Path
 
@@ -283,9 +284,8 @@ def test_sanitize_redacts_complete_private_key_blocks(tmp_path: Path) -> None:
     begin = "-----BEGIN " + "PRIVATE KEY-----"
     end = "-----END " + "PRIVATE KEY-----"
     body = "SYNTHETIC_PRIVATE_KEY_BODY_123456"
-    (source / "notes.txt").write_text(
-        f"before\r\n{begin}\r\n{body}\r\n{end}\r\nafter\r\n",
-        encoding="utf-8",
+    (source / "notes.txt").write_bytes(
+        f"before\r\n{begin}\r\n{body}\r\n{end}\r\nafter\r\n".encode()
     )
 
     report = sanitize_tree(source, destination)
@@ -363,6 +363,7 @@ def test_sanitize_skips_incomplete_private_key_block(tmp_path: Path) -> None:
     assert report.files_skipped == 1
 
 
+@pytest.mark.skipif(os.name == "nt", reason="Windows cannot create control-character names")
 def test_sanitize_skips_nonportable_control_character_path(tmp_path: Path) -> None:
     source = tmp_path / "source"
     destination = tmp_path / "safe"
