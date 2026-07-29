@@ -1,0 +1,12 @@
+title = "repo-safe gitleaks configuration"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Ignore generated binary caches and local build artifacts"
+paths = [
+  '''(^|/)__pycache__/''',
+  '''^dist/''',
+  '''^\.venv/''',
+]

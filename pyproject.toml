@@ -1,0 +1,82 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "repo-safe"
+version = "0.1.0"
+description = "Create reviewable text-only repository snapshots with supported secret patterns redacted."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Erkan Çetinkaya" }]
+keywords = ["security", "secrets", "sanitization", "repository", "snapshot", "cli"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Security",
+  "Topic :: Software Development :: Version Control :: Git",
+  "Typing :: Typed",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/erkcet/repo-safe"
+Repository = "https://github.com/erkcet/repo-safe"
+Issues = "https://github.com/erkcet/repo-safe/issues"
+Changelog = "https://github.com/erkcet/repo-safe/blob/main/CHANGELOG.md"
+Documentation = "https://github.com/erkcet/repo-safe#readme"
+Security = "https://github.com/erkcet/repo-safe/security/policy"
+
+[project.scripts]
+repo-safe = "repo_safe.cli:main"
+
+[dependency-groups]
+dev = [
+  "build>=1.2.2",
+  "mypy>=1.17",
+  "pip-audit>=2.9",
+  "pytest>=8.4",
+  "pytest-cov>=6.2",
+  "ruff>=0.12",
+  "twine>=6.1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/repo_safe"]
+
+[tool.pytest.ini_options]
+addopts = "--strict-config --strict-markers"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["repo_safe"]
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+skip_covered = true
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "S", "C4", "PIE", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+packages = ["repo_safe"]

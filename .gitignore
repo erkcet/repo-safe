@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/
+
+# Local repo-safe output
+.repo-safe-work/
+repo-safe-output/

@@ -1,0 +1,7 @@
+{
+  "name": "synthetic-demo",
+  "service": {
+    "api_key": "EXAMPLE_SECRET_DO_NOT_USE",
+    "enabled": true
+  }
+}
