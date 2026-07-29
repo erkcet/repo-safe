@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import plistlib
+import unicodedata
 from pathlib import Path
 
 import pytest
@@ -461,5 +462,25 @@ def test_sanitize_rejects_aggregate_output_expansion_atomically(tmp_path: Path) 
             max_file_bytes=1_000,
             max_total_bytes=input_total,
         )
+
+    assert not destination.exists()
+
+
+def test_sanitize_rejects_unicode_normalized_path_aliases_atomically(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "source"
+    destination = tmp_path / "safe"
+    source.mkdir()
+    composed = "ca" + chr(0x66) + "\N{LATIN SMALL LETTER E WITH ACUTE}.txt"
+    decomposed = unicodedata.normalize("NFD", composed)
+    (source / composed).write_text("safe\n", encoding="utf-8")
+    monkeypatch.setattr(
+        "repo_safe.sanitizer.collect_tree",
+        lambda *args, **kwargs: [source / composed, source / decomposed],
+    )
+
+    with pytest.raises(ValueError, match="portable path alias collision"):
+        sanitize_tree(source, destination)
 
     assert not destination.exists()

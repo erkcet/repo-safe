@@ -14,7 +14,7 @@ All notable changes are documented in this file. The project follows [Semantic V
 - Recursive JSON and XML property-list redaction.
 - Fail-closed `.env*` redaction.
 - Deterministic SHA-256 manifest without host or source metadata.
-- Snapshot verification for complete schema, integrity, portable paths, duplicate aliases, untracked, linked, binary, special-file, and residual-secret failures.
+- Snapshot verification for complete schema, integrity, portable paths, case/Unicode-normalized duplicate aliases, untracked, linked, binary, special-file, and residual-secret failures.
 - Per-directory, depth, entry, file-size, and total-byte resource bounds.
 - Human-readable and JSON CLI output with stable exit codes and a write-free `--dry-run`.
 - Race-resistant, no-follow regular-file reads with hard-link, symlink, and junction rejection.

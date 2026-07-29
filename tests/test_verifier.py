@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import unicodedata
 from pathlib import Path
 
 import pytest
@@ -248,6 +249,30 @@ def test_verify_rejects_casefolded_duplicate_paths(tmp_path: Path) -> None:
     report = verify_tree(snapshot)
 
     assert "duplicate manifest path: a.txt" in report.errors
+
+
+def test_verify_rejects_unicode_normalized_duplicate_paths(tmp_path: Path) -> None:
+    snapshot = tmp_path / "safe"
+    snapshot.mkdir()
+    composed = "ca" + chr(0x66) + "\N{LATIN SMALL LETTER E WITH ACUTE}.txt"
+    decomposed = unicodedata.normalize("NFD", composed)
+    data = b"safe\n"
+    (snapshot / composed).write_bytes(data)
+    digest = hashlib.sha256(data).hexdigest()
+    manifest = {
+        "schema_version": 1,
+        "files": [
+            {"path": composed, "sha256": digest, "redactions": 0},
+            {"path": decomposed, "sha256": digest, "redactions": 0},
+        ],
+        "summary": {"files_written": 2, "files_skipped": 0, "values_redacted": 0},
+    }
+    (snapshot / ".repo-safe-manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    report = verify_tree(snapshot)
+
+    assert report.ok is False
+    assert f"duplicate manifest path: {decomposed}" in report.errors
 
 
 @pytest.mark.parametrize(

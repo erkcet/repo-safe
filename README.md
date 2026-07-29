@@ -150,7 +150,7 @@ The colocated hashes detect accidental corruption; they are not a signature or p
 
 Directories include `.git`, `.hg`, `.svn`, `.venv`, `node_modules`, `__pycache__`, and common test/lint caches.
 
-Files include SSH private-key names, `.netrc`, `credentials.json`, and `.key`, `.pem`, `.p12`, and `.pfx` suffixes. Built-in sensitive names, directory names, suffixes, `.env*` recognition, and custom exclusion matching are case-insensitive for consistent behavior across supported filesystems. Binary or undecodable files and text files over 5 MiB are skipped.
+Files include SSH private-key names, `.netrc`, `credentials.json`, and `.key`, `.pem`, `.p12`, and `.pfx` suffixes. Built-in sensitive names, directory names, suffixes, `.env*` recognition, and custom exclusion matching use case-insensitive, Unicode-normalized portable identities for consistent behavior across supported filesystems. Binary or undecodable files and text files over 5 MiB are skipped.
 
 Skipped files are counted but not copied. This is a security tool, so uninspectable data is excluded rather than trusted.
 

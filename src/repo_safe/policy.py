@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 from pathlib import Path, PurePosixPath, PureWindowsPath
 
 EXCLUDED_DIRECTORIES = {
@@ -65,8 +66,8 @@ def is_portable_relative_path(value: str) -> bool:
 
 
 def _matches_pattern(relative: Path, pattern: str) -> bool:
-    path = PurePosixPath(relative.as_posix().casefold())
-    pattern = pattern.casefold()
+    path = PurePosixPath(portable_path_key(relative.as_posix()))
+    pattern = portable_path_key(pattern)
     if pattern.endswith("/**"):
         root_pattern = pattern[:-3].rstrip("/")
         candidates = [path, *path.parents]
@@ -77,10 +78,16 @@ def _matches_pattern(relative: Path, pattern: str) -> bool:
 def is_excluded(relative: Path, extra_patterns: tuple[str, ...] = ()) -> bool:
     """Return whether a relative path should be pruned or skipped."""
 
-    folded_parts = {part.casefold() for part in relative.parts}
+    folded_parts = {portable_path_key(part) for part in relative.parts}
     return (
         bool(EXCLUDED_DIRECTORIES.intersection(folded_parts))
-        or relative.name.casefold() in SENSITIVE_FILENAMES
-        or relative.suffix.casefold() in SENSITIVE_SUFFIXES
+        or portable_path_key(relative.name) in SENSITIVE_FILENAMES
+        or any(portable_path_key(relative.name).endswith(suffix) for suffix in SENSITIVE_SUFFIXES)
         or any(_matches_pattern(relative, pattern) for pattern in extra_patterns)
     )
+
+
+def portable_path_key(path: str) -> str:
+    """Return a Unicode-normalized, case-insensitive portable identity key."""
+
+    return unicodedata.normalize("NFC", path).casefold()

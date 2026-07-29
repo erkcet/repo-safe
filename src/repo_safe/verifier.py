@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from .models import VerifyReport
-from .policy import is_excluded, is_portable_relative_path
+from .policy import is_excluded, is_portable_relative_path, portable_path_key
 from .safeio import collect_tree, is_link_like, read_regular_file
 from .scanner import scan_text
 
@@ -107,7 +107,7 @@ def verify_tree(snapshot: Path) -> VerifyReport:
         if not re.fullmatch(r"[0-9a-f]{64}", expected_hash):
             report.errors.append(f"invalid manifest hash: {display}")
             continue
-        canonical = relative.casefold()
+        canonical = portable_path_key(relative)
         if relative in tracked or canonical in canonical_tracked:
             report.errors.append(f"duplicate manifest path: {display}")
             continue

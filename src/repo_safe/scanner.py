@@ -10,7 +10,7 @@ from typing import Any, cast
 from xml.parsers.expat import ExpatError
 
 from .models import Finding, ScanReport
-from .policy import is_excluded, is_portable_relative_path
+from .policy import is_excluded, is_portable_relative_path, portable_path_key
 from .safeio import collect_tree, is_link_like, read_regular_file
 
 
@@ -260,6 +260,7 @@ def scan_tree(
 
     report = ScanReport()
     total_bytes = 0
+    portable_paths: set[str] = set()
     for path in paths:
         relative_path = path.relative_to(source)
         if is_link_like(path):
@@ -272,6 +273,10 @@ def scan_tree(
             continue
         if not path.is_file():
             continue
+        portable_key = portable_path_key(relative_path.as_posix())
+        if portable_key in portable_paths:
+            raise ValueError("portable path alias collision")
+        portable_paths.add(portable_key)
         try:
             raw = read_regular_file(path, max_bytes=max_file_bytes)
             total_bytes += len(raw)

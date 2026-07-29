@@ -9,7 +9,7 @@ import tempfile
 from pathlib import Path
 
 from .models import SanitizeReport
-from .policy import is_excluded, is_portable_relative_path
+from .policy import is_excluded, is_portable_relative_path, portable_path_key
 from .safeio import collect_tree, is_link_like, read_regular_file
 from .scanner import StructuredDataError, redact_json_text, redact_plist_text, redact_text
 
@@ -58,6 +58,7 @@ def sanitize_tree(
     manifest_files: list[dict[str, object]] = []
     total_bytes = 0
     total_output_bytes = 0
+    portable_paths: set[str] = set()
     try:
         for path in paths:
             relative = path.relative_to(source)
@@ -69,6 +70,10 @@ def sanitize_tree(
                 continue
             if not path.is_file():
                 continue
+            portable_key = portable_path_key(relative.as_posix())
+            if portable_key in portable_paths:
+                raise ValueError("portable path alias collision")
+            portable_paths.add(portable_key)
             try:
                 raw = read_regular_file(path, max_bytes=max_file_bytes)
                 total_bytes += len(raw)

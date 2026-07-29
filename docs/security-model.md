@@ -79,7 +79,7 @@ Data is skipped—not copied unchanged—when it cannot be decoded, safely opene
 | Secret in `.env` under an unusual name | Redact every populated assignment |
 | Source symlink escapes repository | Skip symlinks and no-follow opens |
 | Final file replaced between check and open | No-follow leaf open plus descriptor identity comparison |
-| Manifest traversal, drive, alias, or unsafe component | Canonical portable relative-path validation |
+| Manifest traversal, drive, case/Unicode alias, or unsafe component | Canonical portable relative-path validation |
 | Duplicate manifest entries | Explicit duplicate rejection |
 | Binary or huge-file evasion | Text-only boundary and hard size limits |
 | Partial destination after failure | Temporary sibling plus atomic rename |
